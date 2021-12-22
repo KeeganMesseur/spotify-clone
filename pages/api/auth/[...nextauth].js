@@ -1,6 +1,6 @@
-import NextAuth from "next-auth"
-import SpotifyProvider from "next-auth/providers/spotify"
-import spotifyAPI, { LOGIN_URL } from "../../../lib/spotify"
+import NextAuth from "next-auth";
+import SpotifyProvider from "next-auth/providers/spotify";
+import spotifyAPI, { LOGIN_URL } from "../../../lib/spotify";
 
 async function refreshAccessToken(token) {
     try {
@@ -36,7 +36,7 @@ export default NextAuth({
 
     secret: process.env.JWT_SECRET,
     pages: {
-        signIn: '/login'
+        signIn: '/login',
     },
     callbacks: {
         async jwt({ token, account, user }) {
@@ -44,12 +44,14 @@ export default NextAuth({
                 return {
                     ...token,
                     accessToken: account.access_token,
+                    refreshToken: account.refresh_token,
                     username: account.providerAccountId,
                     accessTokenExpires: account.expires_at * 1000
-                }
+                };
             }
+
             if (Date.now() < token.accessTokenExpires) {
-                console.log("TOKEN IS VALID")
+                console.log("TOKEN IS VALID");
                 return token;
             }
 
@@ -63,7 +65,7 @@ export default NextAuth({
             session.user.username = token.username;
 
             return session;
-        }
+        },
 
     },
 })
